@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Brain Game</string>
+    <string name="title_activity_data_list">DataListActivity</string>
+</resources>
