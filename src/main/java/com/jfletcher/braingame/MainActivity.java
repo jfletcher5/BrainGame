@@ -186,13 +186,15 @@ public class MainActivity extends AppCompatActivity {
                 b.setText(message);
 
                 addToDB();
-                Intent i = new Intent(getApplicationContext(), Pop.class);
-                i.putExtra("key", "Value");
-                i.putExtra("points", points);
-                i.putExtra("total", problemTotal);
 
-
-                startActivity(i);
+////
+////                Intent i = new Intent(getApplicationContext(), Pop.class);
+////                i.putExtra("key", "Value");
+////                i.putExtra("points", points);
+////                i.putExtra("total", problemTotal);
+//
+//
+//                startActivity(i);
                 resetGame();
                 b.setVisibility(View.VISIBLE);
                 //b2.setVisibility(View.VISIBLE);
