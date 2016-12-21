@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Brain Game</string>
     <string name="title_activity_data_list">DataListActivity</string>
+
+    <string name="alert_text">
+        Simple timed math game. \r\n
+        \r\nOnce the game starts, for every correct answer the player will get one point.
+        \r\nFor ever incorrect answer the player loses a point. If the player selects three correct answers in a row, they will get
+        three extra seconds added to their time.\r\n
+        \r\nGood luck!!\r\n\r\nPlease select a difficulty on the right.
+    </string>
 </resources>

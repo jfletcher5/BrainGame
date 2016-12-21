@@ -16,6 +16,8 @@ import android.util.*;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
@@ -27,22 +29,29 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    AlertDialog dialog;
+    RadioButton bE, bM, bH;
     MyDBHandler myDBHandler;
     CountDownTimer timer;
     EditText userEditText;
     String timerText, username, scoreText, viewText, message, mathText,
-            correctAnswerText, wrongAnswer1Text, wrongAnswer2Text, wrongAnswer3Text;
+            correctAnswerText, wrongAnswer1Text, wrongAnswer2Text, wrongAnswer3Text,
+            tbl;
     TextView field1, field2, field3, field4, mathTextView, scoreTextView, timerTextView;
     Button b, b2;
     int timerMax = 15;
     int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points;
     int threeInARow = 0;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+
+
+    public void diffSelect (View view){
+
+        RadioButton rb = (RadioButton) findViewById(view.getId());
+        tbl = rb.getTag().toString();
+        Log.i("tbl chosen", tbl);
+
+        printDatabase();
+        b.setEnabled(true);
+    }
 
     public void resetGame(View view) {
 
@@ -271,22 +280,25 @@ public class MainActivity extends AppCompatActivity {
     public void addToDB() {
 
         username = userEditText.getText().toString();
+        if (username.equals("")){
+            username = "Player Name";
+        }
 
         HighScore highscore = new HighScore(username, points);
-        myDBHandler.addHighScore(highscore);
+        myDBHandler.addHighScore(highscore, tbl);
         printDatabase();
     }
 
     // delete item
     public void deleteScore() {
         String inputName = username;
-        myDBHandler.deleteHighScore(inputName);
+        myDBHandler.deleteHighScore(inputName, tbl);
         printDatabase();
     }
 
     public void printDatabase() {
-        String c = myDBHandler.databaseToString();
-        String s = myDBHandler.databaseToStringScore();
+        String c = myDBHandler.databaseToString(tbl);
+        String s = myDBHandler.databaseToStringScore(tbl);
 
         TextView hsListScore = (TextView) findViewById(R.id.hsListScore);
         TextView hsList = (TextView) findViewById(R.id.hsList);
@@ -316,13 +328,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-        alertDialog.setTitle("Rules");
-        alertDialog.setMessage("Simple timed math game. Once the game starts, for every correct answer the player will get one point. " +
-                "For ever incorrect answer the player loses a point. If the player selects three correct answers in a row, they will get" +
-                " three extra seconds added to their time. Good luck!!");
+        alertDialog.setTitle("Rules of this game...");
+        alertDialog.setMessage(getResources().getString(R.string.alert_text));
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Pos",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+
                         dialog.dismiss();
                     }
                 });
@@ -338,9 +349,8 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-        alertDialog.show();
 
-//        Log.i("Dialog", dText);
+        alertDialog.show();
 
         userEditText = (EditText) findViewById(R.id.userName);
 
@@ -365,6 +375,14 @@ public class MainActivity extends AppCompatActivity {
         field3.setEnabled(false);
         field4.setEnabled(false);
 
+        bE = (RadioButton) findViewById(R.id.eButton);
+        bM = (RadioButton) findViewById(R.id.mButton);
+        bH = (RadioButton) findViewById(R.id.hButton);
+
+        bE.setChecked(false);
+        bM.setChecked(false);
+        bH.setChecked(false);
+
         b = (Button) findViewById(R.id.playButton);
         b.setEnabled(false);
 
@@ -372,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
 
         //print initial db results
         myDBHandler = new MyDBHandler(this, null, null, 1);
-        printDatabase();
+//        printDatabase();
     }
 
 }
