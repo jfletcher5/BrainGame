@@ -35,11 +35,12 @@ public class MainActivity extends AppCompatActivity {
     EditText userEditText;
     String timerText, username, scoreText, viewText, message, mathText,
             correctAnswerText, wrongAnswer1Text, wrongAnswer2Text, wrongAnswer3Text,
-            tbl;
+            tbl, function;
     TextView field1, field2, field3, field4, mathTextView, scoreTextView, timerTextView;
     Button b, b2;
     int timerMax = 15;
-    int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points;
+    int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points,
+        nmax,nmin;
     int threeInARow = 0;
 
 
@@ -77,16 +78,36 @@ public class MainActivity extends AppCompatActivity {
         int randNum1 = randGen(6, 1);
         //second number set
         int randNum2 = randGen(6, 1);
-        correctAnswer = randNum1 + randNum2;
 
-        if (correctAnswer < 10) {
-            correctAnswerText = "0" + Integer.toString(correctAnswer);
+        if (tbl.equals("Easy")){
+            correctAnswer = randNum1 + randNum2;
+            function = "+";
+        } else if(tbl.equals("Medium")){
+            if (randGen(2, 1)==1) {
+                function = "-";
+                correctAnswer = randNum1 - randNum2;
+            } else {
+                function = "+";
+                correctAnswer = randNum1 + randNum2;
+            }
         } else {
-            correctAnswerText = Integer.toString(correctAnswer);
+            int i = randGen(3, 1);
+            if (i==1) {
+                function = "*";
+                correctAnswer = randNum1 * randNum2;
+            } else if (i==2) {
+                function = "+";
+                correctAnswer = randNum1 + randNum2;
+            } else {
+                function = "-";
+                correctAnswer = randNum1 - randNum2;
+            }
         }
 
-        //set problem to equal answer
-        mathText = Integer.toString(randNum1) + " + " + Integer.toString(randNum2);
+        correctAnswerText = Integer.toString(correctAnswer);
+
+        //set problem text to equal answer
+        mathText = Integer.toString(randNum1) + " " + function  +" " + Integer.toString(randNum2);
         mathTextView.setText(mathText);
 
         //set one box to correct answer
@@ -103,9 +124,19 @@ public class MainActivity extends AppCompatActivity {
 
 
         //set other boxes to random numbers, re-randomize if equal to correctAnswer
-        wrongAnswer1 = randGen(12, 2);
-        wrongAnswer2 = randGen(12, 2);
-        wrongAnswer3 = randGen(12, 2);
+        if (tbl.equals("Easy")){
+            nmax = 12;
+            nmin = 2;
+        } else if (tbl.equals("Medium")){
+            nmax = 12;
+            nmin = -5;
+        } else if (tbl.equals("Hard")){
+            nmax = 36;
+            nmin = -5;
+        }
+        wrongAnswer1 = randGen(nmax, nmin);
+        wrongAnswer2 = randGen(nmax, nmin);
+        wrongAnswer3 = randGen(nmax, nmin);
 
         while (wrongAnswer1 == correctAnswer) {
             wrongAnswer1 = randGen(12, 2);
@@ -117,22 +148,26 @@ public class MainActivity extends AppCompatActivity {
             wrongAnswer3 = randGen(12, 2);
         }
 
+        wrongAnswer1Text = Integer.toString(wrongAnswer1);
+        wrongAnswer2Text = Integer.toString(wrongAnswer2);
+        wrongAnswer3Text = Integer.toString(wrongAnswer3);
+
         //format single digits
-        if (wrongAnswer1 < 10) {
-            wrongAnswer1Text = "0" + Integer.toString(wrongAnswer1);
-        } else {
-            wrongAnswer1Text = Integer.toString(wrongAnswer1);
-        }
-        if (wrongAnswer2 < 10) {
-            wrongAnswer2Text = "0" + Integer.toString(wrongAnswer2);
-        } else {
-            wrongAnswer2Text = Integer.toString(wrongAnswer2);
-        }
-        if (wrongAnswer3 < 10) {
-            wrongAnswer3Text = "0" + Integer.toString(wrongAnswer3);
-        } else {
-            wrongAnswer3Text = Integer.toString(wrongAnswer3);
-        }
+//        if (wrongAnswer1 < 10) {
+//            wrongAnswer1Text = "0" + Integer.toString(wrongAnswer1);
+//        } else {
+//            wrongAnswer1Text = Integer.toString(wrongAnswer1);
+//        }
+//        if (wrongAnswer2 < 10) {
+//            wrongAnswer2Text = "0" + Integer.toString(wrongAnswer2);
+//        } else {
+//            wrongAnswer2Text = Integer.toString(wrongAnswer2);
+//        }
+//        if (wrongAnswer3 < 10) {
+//            wrongAnswer3Text = "0" + Integer.toString(wrongAnswer3);
+//        } else {
+//            wrongAnswer3Text = Integer.toString(wrongAnswer3);
+//        }
 
         if (cn == 1) {
             field2.setText(wrongAnswer1Text);
@@ -272,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Log.i("play", "Yes");
-        setProblem();
+        setProblem();//add difficult to setProblem
         runTimer(timerMax);
     }
 
