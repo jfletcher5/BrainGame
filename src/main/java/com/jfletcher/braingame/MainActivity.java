@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void runTimer(int time) {
-        timer = new CountDownTimer(time * 1000 + 30, 1000) {
+        timer = new CountDownTimer(time * 1000 + 100, 1000) {
 
             @Override
             public void onTick(long l) {
