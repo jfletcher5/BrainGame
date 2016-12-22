@@ -1,30 +1,17 @@
 package com.jfletcher.braingame;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.*;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.CountDownTimer;
-import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.*;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,9 +26,9 @@ public class MainActivity extends AppCompatActivity {
     TextView field1, field2, field3, field4, mathTextView, scoreTextView, timerTextView;
     Button b, b2;
     int timerMax = 15;
+    int threeInARow = 0;
     int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points,
         nmax,nmin;
-    int threeInARow = 0;
 
 
     public void diffSelect (View view){
@@ -181,12 +168,22 @@ public class MainActivity extends AppCompatActivity {
             points++;
             problemTotal++;
             threeInARow++;
+            //add +1 animation/////////////////////////////
+
+            TextView p1 = (TextView) findViewById(R.id.plusOneScore);
+            p1.setAlpha(1);
+            p1.animate().alpha(0.0f).setDuration(1000);
             Log.i("Answer", "True");
         } else {
             //add to total
             points--;
             problemTotal++;
             threeInARow = 0;
+            //add -1 animation/////////////////////////////
+            TextView m1 = (TextView) findViewById(R.id.minusOneScore);
+            m1.setAlpha(1);
+            m1.animate().alpha(0.0f).setDuration(1000);
+            Log.i("Answer", "True");
             Log.i("Answer", "False");
         }
         scoreText = Integer.toString(points) + "/" + Integer.toString(problemTotal);
@@ -286,6 +283,11 @@ public class MainActivity extends AppCompatActivity {
             Log.i("new time", timerTextView.getText().toString());
             Log.i("Seconds", Integer.toString(newTime));
             runTimer(newTime + 3);
+
+            //add plus 3 animation
+            TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
+            p3.setAlpha(1);
+            p3.animate().alpha(0.0f).setDuration(1000);
         }
     }
 
