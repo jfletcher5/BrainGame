@@ -152,22 +152,6 @@ public class MainActivity extends AppCompatActivity {
         wrongAnswer2Text = Integer.toString(wrongAnswer2);
         wrongAnswer3Text = Integer.toString(wrongAnswer3);
 
-        //format single digits
-//        if (wrongAnswer1 < 10) {
-//            wrongAnswer1Text = "0" + Integer.toString(wrongAnswer1);
-//        } else {
-//            wrongAnswer1Text = Integer.toString(wrongAnswer1);
-//        }
-//        if (wrongAnswer2 < 10) {
-//            wrongAnswer2Text = "0" + Integer.toString(wrongAnswer2);
-//        } else {
-//            wrongAnswer2Text = Integer.toString(wrongAnswer2);
-//        }
-//        if (wrongAnswer3 < 10) {
-//            wrongAnswer3Text = "0" + Integer.toString(wrongAnswer3);
-//        } else {
-//            wrongAnswer3Text = Integer.toString(wrongAnswer3);
-//        }
 
         if (cn == 1) {
             field2.setText(wrongAnswer1Text);
@@ -245,6 +229,20 @@ public class MainActivity extends AppCompatActivity {
                 b.setText(message);
 
                 addToDB();
+
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Great Game!!!");
+                alertDialog.setMessage("You scored "+ points +" on difficulty level " + tbl + ".\n" +
+                        "\n" +
+                        "Try again on a different difficulty. Have fun!");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
 
 ////
 ////                Intent i = new Intent(getApplicationContext(), Pop.class);
@@ -365,25 +363,25 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setTitle("Rules of this game...");
         alertDialog.setMessage(getResources().getString(R.string.alert_text));
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Pos",
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         dialog.dismiss();
                     }
                 });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Neg",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Neut",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+//        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Neg",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Neut",
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
 
         alertDialog.show();
 

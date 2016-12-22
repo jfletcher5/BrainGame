@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Brain Game</string>
+    <string name="app_name">TapDatApp</string>
     <string name="title_activity_data_list">DataListActivity</string>
 
     <string name="alert_text">
