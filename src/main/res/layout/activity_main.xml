@@ -121,8 +121,7 @@
     <TextView
         android:layout_width="30dp"
         android:layout_height="wrap_content"
-        android:text="1      2     3     4
-       5     6     7     8     9     10"
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
         android:id="@+id/hsListRank"
         android:layout_below="@+id/hsListRankHead"
         android:layout_alignParentBottom="true" />
@@ -172,7 +171,7 @@
         android:layout_alignParentStart="true">
 
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/field2"
@@ -182,13 +181,12 @@
             android:gravity="center"
             android:textSize="25sp"
             android:onClick="selected"
-            android:background="@android:color/holo_green_light"
             android:text="00"
             android:layout_row="0"
             android:layout_column="1"
             />
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/field4"
@@ -196,14 +194,13 @@
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:gravity="center"
-            android:background="@color/colorPrimaryDark"
             android:text="00"
             android:textSize="25sp"
             android:onClick="selected"
             android:layout_row="1"
             android:layout_column="1" />
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/field1"
@@ -212,12 +209,11 @@
             android:layout_rowWeight="1"
             android:textSize="25sp"
             android:onClick="selected"
-            android:background="@color/colorPrimaryDark"
             android:text="00"
             android:layout_row="0"
             android:layout_column="0" />
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity=""
@@ -226,7 +222,6 @@
             android:layout_rowWeight="1"
             android:gravity="center"
             android:onClick="selected"
-            android:background="@android:color/holo_green_light"
             android:text="00"
             android:textAlignment="center"
             android:textSize="25sp"

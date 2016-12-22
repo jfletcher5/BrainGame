@@ -74,7 +74,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.insert(tbl, null, values);
         db.close();
-        Log.e("DB Status", "Row added to DB...");
+        Log.e("DB Status", "Row added to "+tbl+" table...");
 
     }
 
