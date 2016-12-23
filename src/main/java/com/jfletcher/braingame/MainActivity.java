@@ -4,15 +4,20 @@ import android.app.AlertDialog;
 import android.content.*;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.CountDownTimer;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.*;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.Random;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,12 +29,70 @@ public class MainActivity extends AppCompatActivity {
             correctAnswerText, wrongAnswer1Text, wrongAnswer2Text, wrongAnswer3Text,
             tbl, function;
     TextView field1, field2, field3, field4, mathTextView, scoreTextView, timerTextView;
-    Button b, b2;
+    Button b, b2, nb1, nb2, nb3, nb4, nb5, nb6;
+    View l1, l2;
     int timerMax = 15;
     int threeInARow = 0;
-    int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points,
+    int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points, level,
         nmax,nmin;
 
+
+    public void waitForLevel2(){
+        new CountDownTimer(3000, 3000){
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                nb1.animate().translationY(2000).setDuration(randGen(5000, 3000));
+                nb2.animate().translationY(2000).setDuration(randGen(5000, 3000));
+                nb3.animate().translationY(2000).setDuration(randGen(5000, 3000));
+                nb4.animate().translationY(2000).setDuration(randGen(5000, 3000));
+                nb5.animate().translationY(2000).setDuration(randGen(5000, 3000));
+                nb6.animate().translationY(2000).setDuration(randGen(5000, 3000));
+                Log.i("Wait", "over");
+            }
+        }.start();
+        Log.i("Wait", "over again");
+
+    }
+
+    public void level2CheckAnswer (){
+
+    }
+
+    public void level2SetProblem(){
+
+    }
+
+    public void level2Translate(final View vReset, long l){
+
+        new CountDownTimer(l, 100){
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                vReset.animate().translationY(2000).setDuration(randGen(5000, 3000));
+            }
+        }.start();
+    }
+
+    public void level2Click(View view){
+
+        view.animate().cancel();
+        Log.i("L2 Button Clicked", view.getTag().toString());
+        float translation = view.getTranslationY();
+        Log.i("Translation", Float.toString(translation));
+        long randReset = randGen(4000, 2000);
+        view.animate().translationY(0).setDuration(randReset);
+        level2Translate(view, randReset);
+
+    }
 
     public void diffSelect (View view){
 
@@ -52,11 +115,6 @@ public class MainActivity extends AppCompatActivity {
         Random r = new Random();
         int nrn = r.nextInt(max - min + 1) + min;
         return nrn;
-    }
-
-    public boolean checkUnique(int wrongA) {
-
-        return wrongA == correctAnswer;
     }
 
     public void setProblem() {
@@ -272,9 +330,16 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Text", viewText);
 
         setScore();
-        setProblem();
 
-        if (threeInARow == 3) {
+        if (points > 2) {
+
+            l1.animate().translationX(1800f).setDuration(3000);
+
+            timer.cancel();
+            Log.i("level 1", "end");
+
+            l2.animate().translationX(0).setDuration(3000);
+            Log.i("level 2", "start");
             timer.cancel();
             threeInARow = 0;
             String timeString = timerTextView.getText().toString();
@@ -282,16 +347,35 @@ public class MainActivity extends AppCompatActivity {
             int newTime = Integer.parseInt(separated[1]);
             Log.i("new time", timerTextView.getText().toString());
             Log.i("Seconds", Integer.toString(newTime));
-            runTimer(newTime + 3);
 
-            //add plus 3 animation
-            TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
-            p3.setAlpha(1);
-            p3.animate().alpha(0.0f).setDuration(1000);
+            waitForLevel2();
+            Log.i("After wait code", "yes");
+
+        } else {
+
+            setProblem();
+
+            if (threeInARow == 3) {
+                timer.cancel();
+                threeInARow = 0;
+                String timeString = timerTextView.getText().toString();
+                String[] separated = timeString.split(":");
+                int newTime = Integer.parseInt(separated[1]);
+                Log.i("new time", timerTextView.getText().toString());
+                Log.i("Seconds", Integer.toString(newTime));
+                runTimer(newTime + 3);
+
+                //add plus 3 animation
+                TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
+                p3.setAlpha(1);
+                p3.animate().alpha(0.0f).setDuration(1000);
+            }
         }
     }
 
     public void playGame(View view) {
+
+        level = 1;
 
         b = (Button) findViewById(R.id.playButton);
         //b2 = (Button) findViewById(R.id.resetScores);
@@ -304,7 +388,6 @@ public class MainActivity extends AppCompatActivity {
         field2.setEnabled(true);
         field3.setEnabled(true);
         field4.setEnabled(true);
-
 
         Log.i("play", "Yes");
         setProblem();//add difficult to setProblem
@@ -362,13 +445,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        l1 = (View) findViewById(R.id.levelOneLayout);
+        l2 = (View) findViewById(R.id.levelTwoLayout);
+
+        nb1 = (Button) findViewById(R.id.numBlock1);
+        nb2 = (Button) findViewById(R.id.numBlock2);
+        nb3 = (Button) findViewById(R.id.numBlock3);
+        nb4 = (Button) findViewById(R.id.numBlock4);
+        nb5 = (Button) findViewById(R.id.numBlock5);
+        nb6 = (Button) findViewById(R.id.numBlock6);
+
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setTitle("Rules of this game...");
         alertDialog.setMessage(getResources().getString(R.string.alert_text));
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
                     }
                 });
