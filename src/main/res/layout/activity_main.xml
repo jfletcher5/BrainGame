@@ -17,12 +17,47 @@
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="400sp"
+        android:layout_height="match_parent"
         android:id="@+id/levelTwoLayout"
-        android:translationX="-0dp"
+        android:translationX="-800dp"
         android:alpha="1">
 
+        <TextView
+            android:layout_width="100sp"
+            android:layout_height="30sp"
+            android:id="@+id/levelTwoNum1"
+            android:text="00"
+            android:gravity="center"
+            android:layout_below="@+id/levelTwoLayoutNumbers"
+            android:layout_marginTop="40sp"
+            />
+        <TextView
+            android:layout_width="100sp"
+            android:layout_height="30sp"
+            android:id="@+id/levelTwoNum2"
+            android:text="00"
+            android:gravity="center"
+            android:layout_below="@+id/levelTwoLayoutNumbers"
+            android:layout_marginTop="40sp"
+            android:layout_marginLeft="100sp"
+            />
+        <TextView
+            android:layout_width="100sp"
+            android:layout_height="30sp"
+            android:id="@+id/levelTwoNum3"
+            android:text="00"
+            android:gravity="center"
+            android:layout_below="@+id/levelTwoLayoutNumbers"
+            android:layout_marginTop="40sp"
+            android:layout_marginLeft="200sp"
+            />
 
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="400sp"
+            android:id="@+id/levelTwoLayoutNumbers"
+            >
 
             <View android:background="#000000"
                 android:layout_width = "match_parent"
@@ -90,12 +125,13 @@
                 android:id="@+id/numBlock6" />
 
     </RelativeLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/levelOneLayout"
-        android:translationX="8000dp"
+        android:translationX="0dp"
         android:alpha="1">
         <TextView
             android:layout_width="wrap_content"
