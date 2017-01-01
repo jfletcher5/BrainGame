@@ -96,16 +96,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/levelTwoLayoutNumbers"
-            android:layout_centerHorizontal="true"
             >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="30sp"
-                android:padding="3sp"
+                android:padding="5sp"
                 android:id="@+id/levelTwoAnswerText"
                 android:background="@drawable/border"
                 android:text="Choose two numbers that total "
+                android:textColor="#000"
                 android:gravity="center"
                 android:layout_marginTop="10sp"
                 />
@@ -122,6 +122,31 @@
                 android:layout_marginTop="10sp"
                 android:layout_toEndOf="@+id/levelTwoAnswerText"
                 />
+            <TextView
+                android:layout_width="85sp"
+                android:layout_height="30sp"
+                android:layout_toEndOf="@+id/levelTwoAnswer1"
+                android:layout_marginTop="10sp"
+                android:textSize="20sp"
+                android:textColor="#000"
+                android:gravity="center"
+                android:text="00:00"
+                />
+            <TextView
+                android:layout_width="85sp"
+                android:layout_height="30sp"
+                android:layout_toEndOf="@+id/levelTwoAnswer1"
+                android:layout_marginTop="40sp"
+                android:textSize="20sp"
+                android:textColor="#000"
+                android:gravity="center"
+                android:text="points"
+                />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true">
 
             <TextView
                 android:layout_width="85sp"
@@ -152,6 +177,7 @@
                 android:layout_marginStart="115sp"
                 />
 
+            </RelativeLayout>
 
 
         </RelativeLayout>
