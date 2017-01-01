@@ -1,10 +1,10 @@
 package com.jfletcher.braingame;
 
 import android.app.AlertDialog;
+import android.app.VoiceInteractor;
 import android.content.*;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.CountDownTimer;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
@@ -13,11 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.Random;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
+
+import static android.R.attr.prompt;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,66 +31,31 @@ public class MainActivity extends AppCompatActivity {
     Button b, b2, nb1, nb2, nb3, nb4, nb5, nb6;
     View l1, l2;
     int timerMax = 15;
-    int threeInARow = 0;
+    int threeInARow = 0; int scoreToL2 = 3;
     int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points, level,
-        nmax,nmin;
+        nmax,nmin,lev2correctAnswer;
+    int setChoice = 1;
 
+    //General Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void playGame(View view) {
 
-    public void waitForLevel2(){
-        new CountDownTimer(3000, 3000){
-            @Override
-            public void onTick(long l) {
+        level = 1;
 
-            }
+        b = (Button) findViewById(R.id.playButton);
+        //b2 = (Button) findViewById(R.id.resetScores);
+        b.setVisibility(View.INVISIBLE);
+        //b2.setVisibility(View.INVISIBLE);
 
-            @Override
-            public void onFinish() {
-                nb1.animate().translationY(2000).setDuration(randGen(5000, 3000));
-                nb2.animate().translationY(2000).setDuration(randGen(5000, 3000));
-                nb3.animate().translationY(2000).setDuration(randGen(5000, 3000));
-                nb4.animate().translationY(2000).setDuration(randGen(5000, 3000));
-                nb5.animate().translationY(2000).setDuration(randGen(5000, 3000));
-                nb6.animate().translationY(2000).setDuration(randGen(5000, 3000));
-                Log.i("Wait", "over");
-            }
-        }.start();
-        Log.i("Wait", "over again");
+        userEditText.setEnabled(false);
 
-    }
+        field1.setEnabled(true);
+        field2.setEnabled(true);
+        field3.setEnabled(true);
+        field4.setEnabled(true);
 
-    public void level2CheckAnswer (){
-
-    }
-
-    public void level2SetProblem(){
-
-    }
-
-    public void level2Translate(final View vReset, long l){
-
-        new CountDownTimer(l, 100){
-            @Override
-            public void onTick(long l) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                vReset.animate().translationY(2000).setDuration(randGen(5000, 3000));
-            }
-        }.start();
-    }
-
-    public void level2Click(View view){
-
-        view.animate().cancel();
-        Log.i("L2 Button Clicked", view.getTag().toString());
-        float translation = view.getTranslationY();
-        Log.i("Translation", Float.toString(translation));
-        long randReset = randGen(4000, 2000);
-        view.animate().translationY(0).setDuration(randReset);
-        level2Translate(view, randReset);
-
+        Log.i("play", "Yes");
+        setProblem();//add difficult to setProblem
+        runTimer(timerMax);
     }
 
     public void diffSelect (View view){
@@ -103,18 +67,179 @@ public class MainActivity extends AppCompatActivity {
         printDatabase();
         b.setEnabled(true);
     }
-
-    public void resetGame(View view) {
+    public void resetHSTable(View view) {
 
         SQLiteDatabase db = myDBHandler.getWritableDatabase();
-        myDBHandler.resetTable(db);
+        myDBHandler.resetTable(db, tbl);
         printDatabase();
+    }
+    public void runTimer(int time) {
+
+        //this needs work to format for multiple levels
+
+        timer = new CountDownTimer(time * 1000 + 100, 1000) {
+
+            @Override
+            public void onTick(long l) {
+
+                timerTextView = (TextView) findViewById(R.id.timer);
+                if (l < 10000) {
+                    timerText = "00:0" + Long.toString(l / 1000);
+                } else {
+                    timerText = "00:" + Long.toString(l / 1000);
+                }
+                timerTextView.setText(timerText);
+            }
+
+            @Override
+            public void onFinish() {
+
+                field1.setEnabled(false);
+                field2.setEnabled(false);
+                field3.setEnabled(false);
+                field4.setEnabled(false);
+                userEditText.setEnabled(true);
+
+                timerTextView.setText("00:00");
+                //change button to reset
+                b = (Button) findViewById(R.id.playButton);
+                message = "Play Again";
+                b.setText(message);
+
+                addToDB();
+
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Great Game!!!");
+                alertDialog.setMessage("You scored "+ points +" on difficulty level " + tbl + ".\n" +
+                        "\n" +
+                        "Try again on a different difficulty. Have fun!");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+
+////
+////                Intent i = new Intent(getApplicationContext(), Pop.class);
+////                i.putExtra("key", "Value");
+////                i.putExtra("points", points);
+////                i.putExtra("total", problemTotal);
+//
+//
+//                startActivity(i);
+                resetL1Game();
+                b.setVisibility(View.VISIBLE);
+                //b2.setVisibility(View.VISIBLE);
+            }
+
+        };
+        timer.start();
+
     }
 
     public int randGen(int max, int min) {
         Random r = new Random();
         int nrn = r.nextInt(max - min + 1) + min;
         return nrn;
+    }
+
+    public void printDatabase() {
+        String c = myDBHandler.databaseToString(tbl);
+        String s = myDBHandler.databaseToStringScore(tbl);
+
+        TextView hsListScore = (TextView) findViewById(R.id.hsListScore);
+        TextView hsList = (TextView) findViewById(R.id.hsList);
+        hsList.setText(c);
+        hsListScore.setText(s);
+
+        Log.i("DB Results", c);
+        Log.i("DB Results", s);
+    }
+
+    //add highscore to database
+    public void addToDB() {
+
+        username = userEditText.getText().toString();
+        if (username.equals("")){
+            username = "Player Name";
+        }
+
+        HighScore highscore = new HighScore(username, points);
+        myDBHandler.addHighScore(highscore, tbl);
+        printDatabase();
+    }
+
+    // delete highscore
+    public void deleteScore() {
+        String inputName = username;
+        myDBHandler.deleteHighScore(inputName, tbl);
+        printDatabase();
+    }
+
+
+    public void setScore() {
+
+        if (checkAnswer()) {
+            //add point and to total
+            points++;
+            problemTotal++;
+            threeInARow++;
+            //add +1 animation/////////////////////////////
+
+            TextView p1 = (TextView) findViewById(R.id.plusOneScore);
+            p1.setAlpha(1);
+            p1.animate().alpha(0.0f).setDuration(1000);
+            Log.i("Answer", "True");
+        } else {
+            //add to total
+            points--;
+            problemTotal++;
+            threeInARow = 0;
+            //add -1 animation/////////////////////////////
+            TextView m1 = (TextView) findViewById(R.id.minusOneScore);
+            m1.setAlpha(1);
+            m1.animate().alpha(0.0f).setDuration(1000);
+            Log.i("Answer", "True");
+            Log.i("Answer", "False");
+        }
+        scoreText = Integer.toString(points) + "/" + Integer.toString(problemTotal);
+        scoreTextView.setText(scoreText);
+    }
+
+    //Level 1 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void waitForLevel2(){
+        new CountDownTimer(3000, 3000){
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+
+                level2SetProblem();
+                translateLevel2Blocks();
+                Log.i("Wait", "over");
+            }
+        }.start();
+        Log.i("Wait", "over again");
+
+    }
+    public void resetL1Game() {
+
+        field1.setText("00");
+        field2.setText("00");
+        field3.setText("00");
+        field4.setText("00");
+        timerTextView.setText("00:" + timerMax);
+        mathTextView.setText(" ");
+        scoreTextView.setText("0/0");
+        points = 0;
+        problemTotal = 0;
     }
 
     public void setProblem() {
@@ -218,103 +343,9 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("math problem", mathText);
     }
-
-    public void setScore() {
-
-        if (checkAnswer()) {
-            //add point and to total
-            points++;
-            problemTotal++;
-            threeInARow++;
-            //add +1 animation/////////////////////////////
-
-            TextView p1 = (TextView) findViewById(R.id.plusOneScore);
-            p1.setAlpha(1);
-            p1.animate().alpha(0.0f).setDuration(1000);
-            Log.i("Answer", "True");
-        } else {
-            //add to total
-            points--;
-            problemTotal++;
-            threeInARow = 0;
-            //add -1 animation/////////////////////////////
-            TextView m1 = (TextView) findViewById(R.id.minusOneScore);
-            m1.setAlpha(1);
-            m1.animate().alpha(0.0f).setDuration(1000);
-            Log.i("Answer", "True");
-            Log.i("Answer", "False");
-        }
-        scoreText = Integer.toString(points) + "/" + Integer.toString(problemTotal);
-        scoreTextView.setText(scoreText);
-    }
-
     public boolean checkAnswer() {
 
         return answer == correctAnswer;
-    }
-
-    public void runTimer(int time) {
-        timer = new CountDownTimer(time * 1000 + 100, 1000) {
-
-            @Override
-            public void onTick(long l) {
-
-                timerTextView = (TextView) findViewById(R.id.timer);
-                if (l < 10000) {
-                    timerText = "00:0" + Long.toString(l / 1000);
-                } else {
-                    timerText = "00:" + Long.toString(l / 1000);
-                }
-                timerTextView.setText(timerText);
-            }
-
-            @Override
-            public void onFinish() {
-
-                field1.setEnabled(false);
-                field2.setEnabled(false);
-                field3.setEnabled(false);
-                field4.setEnabled(false);
-                userEditText.setEnabled(true);
-
-                timerTextView.setText("00:00");
-                //change button to reset
-                b = (Button) findViewById(R.id.playButton);
-                message = "Play Again";
-                b.setText(message);
-
-                addToDB();
-
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Great Game!!!");
-                alertDialog.setMessage("You scored "+ points +" on difficulty level " + tbl + ".\n" +
-                        "\n" +
-                        "Try again on a different difficulty. Have fun!");
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
-
-////
-////                Intent i = new Intent(getApplicationContext(), Pop.class);
-////                i.putExtra("key", "Value");
-////                i.putExtra("points", points);
-////                i.putExtra("total", problemTotal);
-//
-//
-//                startActivity(i);
-                resetGame();
-                b.setVisibility(View.VISIBLE);
-                //b2.setVisibility(View.VISIBLE);
-            }
-
-        };
-        timer.start();
-
     }
 
     public void selected(View view) {
@@ -331,23 +362,28 @@ public class MainActivity extends AppCompatActivity {
 
         setScore();
 
-        if (points > 2) {
+        //if score equals L1 goal then move to level 2, if not set problem and check for 3 in a row
+        if (points >= scoreToL2) {
 
+            //translate L1 off screen
             l1.animate().translationX(1800f).setDuration(3000);
 
+            //stop timer
             timer.cancel();
-            Log.i("level 1", "end");
+            Log.i("level 1", "complete");
 
+            //animate L2 on to screen
             l2.animate().translationX(0).setDuration(3000);
             Log.i("level 2", "start");
-            timer.cancel();
+
+            //reset three in a row variable and grab time remaining
             threeInARow = 0;
             String timeString = timerTextView.getText().toString();
             String[] separated = timeString.split(":");
             int newTime = Integer.parseInt(separated[1]);
-            Log.i("new time", timerTextView.getText().toString());
-            Log.i("Seconds", Integer.toString(newTime));
+            Log.i("new time", Integer.toString(newTime));
 
+            //wait for L2 translate before starting game
             waitForLevel2();
             Log.i("After wait code", "yes");
 
@@ -355,14 +391,14 @@ public class MainActivity extends AppCompatActivity {
 
             setProblem();
 
+            //if players gets 3 in a row, stop timer and start a new one with old time +3
             if (threeInARow == 3) {
                 timer.cancel();
                 threeInARow = 0;
                 String timeString = timerTextView.getText().toString();
                 String[] separated = timeString.split(":");
                 int newTime = Integer.parseInt(separated[1]);
-                Log.i("new time", timerTextView.getText().toString());
-                Log.i("Seconds", Integer.toString(newTime));
+                Log.i("new time", Integer.toString(newTime));
                 runTimer(newTime + 3);
 
                 //add plus 3 animation
@@ -373,72 +409,127 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void playGame(View view) {
+    //Level 2 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        level = 1;
+    public void resetL2Blocks (){
 
-        b = (Button) findViewById(R.id.playButton);
-        //b2 = (Button) findViewById(R.id.resetScores);
-        b.setVisibility(View.INVISIBLE);
-        //b2.setVisibility(View.INVISIBLE);
+        //reset blocks to starting position
+        nb1.animate().translationY(0).setDuration(1000);
+        nb2.animate().translationY(0).setDuration(1000);
+        nb3.animate().translationY(0).setDuration(1000);
+        nb4.animate().translationY(0).setDuration(1000);
+        nb5.animate().translationY(0).setDuration(1000);
+        nb6.animate().translationY(0).setDuration(1000);
 
-        userEditText.setEnabled(false);
+        new CountDownTimer(1000, 100) {
+            @Override
+            public void onTick(long l) {
 
-        field1.setEnabled(true);
-        field2.setEnabled(true);
-        field3.setEnabled(true);
-        field4.setEnabled(true);
+            }
 
-        Log.i("play", "Yes");
-        setProblem();//add difficult to setProblem
-        runTimer(timerMax);
+            @Override
+            public void onFinish() {
+                translateLevel2Blocks();
+            }
+        }.start();
+
     }
 
-    //add to database
-    public void addToDB() {
+    public void translateLevel2Blocks(){
 
-        username = userEditText.getText().toString();
-        if (username.equals("")){
-            username = "Player Name";
+        int tmin = 7000; int tmax = 8000;
+        nb1.animate().translationY(2000).setDuration(randGen(tmax, tmin));
+        nb2.animate().translationY(2000).setDuration(randGen(tmax, tmin));
+        nb3.animate().translationY(2000).setDuration(randGen(tmax, tmin));
+        nb4.animate().translationY(2000).setDuration(randGen(tmax, tmin));
+        nb5.animate().translationY(2000).setDuration(randGen(tmax, tmin));
+        nb6.animate().translationY(2000).setDuration(randGen(tmax, tmin));
+    }
+
+    public void level2CheckAnswer (){
+
+        TextView cb1 = (TextView) findViewById(R.id.levelTwoChoice1);TextView cb2 = (TextView) findViewById(R.id.levelTwoChoice2);
+        int playerGuess = Integer.parseInt(cb1.getText().toString())+Integer.parseInt(cb2.getText().toString());
+        if (lev2correctAnswer==playerGuess){
+            resetL2Blocks();
+            level2SetProblem();
+            points++;
+            problemTotal++;
+        } else {
+            points--;
+            problemTotal++;
         }
 
-        HighScore highscore = new HighScore(username, points);
-        myDBHandler.addHighScore(highscore, tbl);
-        printDatabase();
     }
 
-    // delete item
-    public void deleteScore() {
-        String inputName = username;
-        myDBHandler.deleteHighScore(inputName, tbl);
-        printDatabase();
+    public void level2SetProblem(){
+
+        TextView l2AnswerTextView = (TextView) findViewById(R.id.levelTwoAnswer1);
+        lev2correctAnswer = randGen(11, 3);
+        l2AnswerTextView.setText(Integer.toString(lev2correctAnswer));
+
     }
 
-    public void printDatabase() {
-        String c = myDBHandler.databaseToString(tbl);
-        String s = myDBHandler.databaseToStringScore(tbl);
+    public void level2setChoice(int n){
 
-        TextView hsListScore = (TextView) findViewById(R.id.hsListScore);
-        TextView hsList = (TextView) findViewById(R.id.hsList);
-        hsList.setText(c);
-        hsListScore.setText(s);
+        String nSet = Integer.toString(n);
 
-        Log.i("DB Results", c);
-        Log.i("DB Results", s);
+        if (setChoice == 1){
+            //set choice 1 to n
+            TextView cb1 = (TextView) findViewById(R.id.levelTwoChoice1);
+            cb1.setText(nSet);
+            cb1.setScaleX(3);cb1.setScaleY(3);
+            cb1.animate().scaleX(1).scaleY(1).setDuration(1000);
+            setChoice = 2;
+        } else {
+            //set choice 2 to n
+            TextView cb1 = (TextView) findViewById(R.id.levelTwoChoice2);
+            cb1.setText(nSet);
+            cb1.setScaleX(3);cb1.setScaleY(3);
+            cb1.animate().scaleX(1).scaleY(1).setDuration(1000);
+            setChoice = 1;
+            level2CheckAnswer();
+        }
+
     }
 
-    public void resetGame() {
+    public void level2Translate(final View vReset, long l, final long r){
 
-        field1.setText("00");
-        field2.setText("00");
-        field3.setText("00");
-        field4.setText("00");
-        timerTextView.setText("00:" + timerMax);
-        mathTextView.setText(" ");
-        scoreTextView.setText("0/0");
-        points = 0;
-        problemTotal = 0;
+        new CountDownTimer(l, 100){
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                vReset.animate().translationY(2000).setDuration(r);
+            }
+        }.start();
     }
+
+    public void level2Click(View view){
+
+        Button vb = (Button) findViewById(view.getId());
+        String selectedButtonText = vb.getText().toString();
+        int selectedNumber = Integer.parseInt(selectedButtonText);
+
+        view.animate().cancel();
+        Log.i("L2 Button Clicked", view.getTag().toString());
+        float translation = view.getTranslationY();
+        Log.i("Translation", Float.toString(translation));
+        long randReset = randGen(8000, 6000);
+
+        level2setChoice(selectedNumber);
+
+//        view.animate().translationY(0).setDuration(2000);
+//        level2Translate(view, 2000, randReset);
+
+    }
+
+    //Level 3 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -447,6 +538,8 @@ public class MainActivity extends AppCompatActivity {
 
         l1 = (View) findViewById(R.id.levelOneLayout);
         l2 = (View) findViewById(R.id.levelTwoLayout);
+        l1.setAlpha(1);
+        l2.animate().translationX(-8000).setDuration(0);
 
         nb1 = (Button) findViewById(R.id.numBlock1);
         nb2 = (Button) findViewById(R.id.numBlock2);
@@ -464,18 +557,6 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-//        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Neg",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Neut",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
 
         alertDialog.show();
 

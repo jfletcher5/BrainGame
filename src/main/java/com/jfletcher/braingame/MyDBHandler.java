@@ -58,10 +58,8 @@ public class MyDBHandler extends SQLiteOpenHelper{
         Log.e("DB Status", "DB Upgraded...");
     }
 
-    public void resetTable (SQLiteDatabase db){
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HIGHSCORESE);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HIGHSCORESM);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HIGHSCORESH);
+    public void resetTable (SQLiteDatabase db, String tbl){
+        db.execSQL("DROP TABLE IF EXISTS " + tbl);
         Log.e("DB Status", "Table Dropped...");
         onCreate(db);
     }
