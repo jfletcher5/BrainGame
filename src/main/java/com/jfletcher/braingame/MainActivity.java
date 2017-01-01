@@ -27,13 +27,14 @@ public class MainActivity extends AppCompatActivity {
     String timerText, username, scoreText, viewText, message, mathText,
             correctAnswerText, wrongAnswer1Text, wrongAnswer2Text, wrongAnswer3Text,
             tbl, function;
-    TextView field1, field2, field3, field4, mathTextView, scoreTextView, timerTextView;
+    TextView field1, field2, field3, field4, mathTextView, scoreTextView, timerTextView,
+        level2time, level2points;
     Button b, b2, nb1, nb2, nb3, nb4, nb5, nb6;
     View l1, l2;
     int timerMax = 15;
     int threeInARow = 0; int scoreToL2 = 3;
     int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points, level,
-        nmax,nmin,lev2correctAnswer;
+        nmax,nmin,lev2correctAnswer, newTime;
     int setChoice = 1;
 
     //General Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("play", "Yes");
         setProblem();//add difficult to setProblem
-        runTimer(timerMax);
+        runTimer(timerMax, timerTextView);
     }
 
     public void diffSelect (View view){
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         myDBHandler.resetTable(db, tbl);
         printDatabase();
     }
-    public void runTimer(int time) {
+    public void runTimer(int time, final TextView tv) {
 
         //this needs work to format for multiple levels
 
@@ -82,13 +83,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTick(long l) {
 
-                timerTextView = (TextView) findViewById(R.id.timer);
                 if (l < 10000) {
                     timerText = "00:0" + Long.toString(l / 1000);
                 } else {
                     timerText = "00:" + Long.toString(l / 1000);
                 }
-                timerTextView.setText(timerText);
+                tv.setText(timerText);
             }
 
             @Override
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 field4.setEnabled(false);
                 userEditText.setEnabled(true);
 
-                timerTextView.setText("00:00");
+                tv.setText("00:00");
                 //change button to reset
                 b = (Button) findViewById(R.id.playButton);
                 message = "Play Again";
@@ -133,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
                 resetL1Game();
                 b.setVisibility(View.VISIBLE);
                 //b2.setVisibility(View.VISIBLE);
+
+                resetLayouts();
+
             }
 
         };
@@ -220,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-
+                runTimer(newTime, level2time);
                 level2SetProblem();
                 translateLevel2Blocks();
                 Log.i("Wait", "over");
@@ -373,6 +376,11 @@ public class MainActivity extends AppCompatActivity {
             Log.i("level 1", "complete");
 
             //animate L2 on to screen
+
+            level2time = (TextView) findViewById(R.id.level2Time);
+            level2time.setText(Integer.toString(newTime));
+            level2points = (TextView) findViewById(R.id.level2points);
+            level2points.setText(Integer.toString(points));
             l2.animate().translationX(0).setDuration(3000);
             Log.i("level 2", "start");
 
@@ -380,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
             threeInARow = 0;
             String timeString = timerTextView.getText().toString();
             String[] separated = timeString.split(":");
-            int newTime = Integer.parseInt(separated[1]);
+            newTime = Integer.parseInt(separated[1]);
             Log.i("new time", Integer.toString(newTime));
 
             //wait for L2 translate before starting game
@@ -399,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                 String[] separated = timeString.split(":");
                 int newTime = Integer.parseInt(separated[1]);
                 Log.i("new time", Integer.toString(newTime));
-                runTimer(newTime + 3);
+                runTimer(newTime + 3, timerTextView);
 
                 //add plus 3 animation
                 TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
@@ -455,10 +463,15 @@ public class MainActivity extends AppCompatActivity {
             level2SetProblem();
             points++;
             problemTotal++;
+            threeInARow++;
         } else {
             points--;
             problemTotal++;
+            threeInARow=0;
         }
+
+        level2points = (TextView) findViewById(R.id.level2points);
+        level2points.setText(Integer.toString(points));
 
     }
 
@@ -522,14 +535,47 @@ public class MainActivity extends AppCompatActivity {
 
         level2setChoice(selectedNumber);
 
+        //if players gets 3 in a row, stop timer and start a new one with old time +3
+        if (threeInARow == 3) {
+            timer.cancel();
+            threeInARow = 0;
+            String timeString = level2time.getText().toString();
+            String[] separated = timeString.split(":");
+            int newTime = Integer.parseInt(separated[1]);
+            Log.i("new time", Integer.toString(newTime));
+            runTimer(newTime + 3, level2time);
+
+            //add plus 3 animation
+            TextView p3 = (TextView) findViewById(R.id.l2plusThreeTime);
+            p3.setAlpha(1);
+            p3.animate().alpha(0.0f).setDuration(1000);
+        }
+
 //        view.animate().translationY(0).setDuration(2000);
 //        level2Translate(view, 2000, randReset);
+
+    }
+
+    public void resetl2game(){
+
+//        resetL2Blocks();
 
     }
 
     //Level 3 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+    public void resetLayouts(){
+
+//        resetL1Game();
+//        resetl2game();
+        l1.setAlpha(1);
+        l1.animate().translationX(0).setDuration(0);
+        l2.animate().translationX(-8000).setDuration(0);
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -538,8 +584,8 @@ public class MainActivity extends AppCompatActivity {
 
         l1 = (View) findViewById(R.id.levelOneLayout);
         l2 = (View) findViewById(R.id.levelTwoLayout);
-        l1.setAlpha(1);
-        l2.animate().translationX(-8000).setDuration(0);
+
+        resetLayouts();
 
         nb1 = (Button) findViewById(R.id.numBlock1);
         nb2 = (Button) findViewById(R.id.numBlock2);
