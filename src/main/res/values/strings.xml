@@ -9,4 +9,12 @@
         three extra seconds added to their time.\r\n
         \r\nGood luck!!\r\n\r\nPlease select a difficulty on the right.
     </string>
+
+    <string name="l2alert_text">
+        FALLING BLOCKS!\n
+        \nSelect two blocks that will create the total in the purple box. Your time and score will
+        carry over from level 1, so the more you bring with you, the move you have!\n
+        \n
+        Good luck :)
+    </string>
 </resources>

@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:id="@+id/levelTwoLayout"
         android:translationX="-00dp"
-        android:alpha="0">
+        android:alpha="1">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -94,7 +94,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80sp"
             android:layout_below="@+id/levelTwoLayoutNumbers"
             android:background="@drawable/border"
             >
@@ -199,7 +199,7 @@
         android:layout_height="match_parent"
         android:id="@+id/levelOneLayout"
         android:translationX="0dp"
-        android:alpha="1">
+        android:alpha="0">
 
         <TextView
             android:layout_width="wrap_content"
@@ -332,6 +332,7 @@
             android:id="@+id/userName"
             android:hint="Enter your name"
             android:layout_alignBottom="@+id/playButton"
+            android:layout_toStartOf="@+id/playButton"
             android:layout_alignParentStart="true"
             />
 
@@ -352,7 +353,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/playButton"
-        android:layout_toEndOf="@+id/userName"
         android:id="@+id/radioGroup">
 
         <RadioButton

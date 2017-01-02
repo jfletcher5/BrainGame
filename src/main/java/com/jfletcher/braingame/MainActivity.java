@@ -32,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
     Button b, b2, nb1, nb2, nb3, nb4, nb5, nb6;
     View l1, l2;
     int timerMax = 15;
-    int threeInARow = 0; int scoreToL2 = 3;
+    int threeInARow = 0;
+
+    int scoreToL2 = 3;//<<Level 1 goal////////////////////////////////
+
     int problemTotal, rn, cn, answer, wrongAnswer1, wrongAnswer2, wrongAnswer3, correctAnswer, points, level,
         nmax,nmin,lev2correctAnswer, newTime;
     int setChoice = 1;
@@ -223,10 +226,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                runTimer(newTime, level2time);
-                level2SetProblem();
-                translateLevel2Blocks();
-                Log.i("Wait", "over");
+
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Level 2 Rules...");
+                alertDialog.setMessage(getResources().getString(R.string.l2alert_text));
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                runTimer(newTime, level2time);
+                                level2SetProblem();
+                                translateLevel2Blocks();
+                                Log.i("Wait", "over");
+                            }
+                        });
+
+                alertDialog.show();
+
+
             }
         }.start();
         Log.i("Wait", "over again");
@@ -364,6 +381,20 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Text", viewText);
 
         setScore();
+        if (threeInARow == 3) {
+            timer.cancel();
+            threeInARow = 0;
+            String timeString = timerTextView.getText().toString();
+            String[] separated = timeString.split(":");
+            int newTime = Integer.parseInt(separated[1]);
+            Log.i("new time", Integer.toString(newTime));
+            runTimer(newTime + 3, timerTextView);
+
+            //add plus 3 animation
+            TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
+            p3.setAlpha(1);
+            p3.animate().alpha(0.0f).setDuration(1000);
+        }
 
         //if score equals L1 goal then move to level 2, if not set problem and check for 3 in a row
         if (points >= scoreToL2) {
@@ -376,7 +407,6 @@ public class MainActivity extends AppCompatActivity {
             Log.i("level 1", "complete");
 
             //animate L2 on to screen
-
             level2time = (TextView) findViewById(R.id.level2Time);
             level2time.setText(Integer.toString(newTime));
             level2points = (TextView) findViewById(R.id.level2points);
@@ -400,20 +430,20 @@ public class MainActivity extends AppCompatActivity {
             setProblem();
 
             //if players gets 3 in a row, stop timer and start a new one with old time +3
-            if (threeInARow == 3) {
-                timer.cancel();
-                threeInARow = 0;
-                String timeString = timerTextView.getText().toString();
-                String[] separated = timeString.split(":");
-                int newTime = Integer.parseInt(separated[1]);
-                Log.i("new time", Integer.toString(newTime));
-                runTimer(newTime + 3, timerTextView);
-
-                //add plus 3 animation
-                TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
-                p3.setAlpha(1);
-                p3.animate().alpha(0.0f).setDuration(1000);
-            }
+//            if (threeInARow == 3) {
+//                timer.cancel();
+//                threeInARow = 0;
+//                String timeString = timerTextView.getText().toString();
+//                String[] separated = timeString.split(":");
+//                int newTime = Integer.parseInt(separated[1]);
+//                Log.i("new time", Integer.toString(newTime));
+//                runTimer(newTime + 3, timerTextView);
+//
+//                //add plus 3 animation
+//                TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
+//                p3.setAlpha(1);
+//                p3.animate().alpha(0.0f).setDuration(1000);
+//            }
         }
     }
 
@@ -456,6 +486,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void level2CheckAnswer (){
 
+        ///Check answer on block 2 selection
         TextView cb1 = (TextView) findViewById(R.id.levelTwoChoice1);TextView cb2 = (TextView) findViewById(R.id.levelTwoChoice2);
         int playerGuess = Integer.parseInt(cb1.getText().toString())+Integer.parseInt(cb2.getText().toString());
         if (lev2correctAnswer==playerGuess){
@@ -571,6 +602,7 @@ public class MainActivity extends AppCompatActivity {
 //        resetL1Game();
 //        resetl2game();
         l1.setAlpha(1);
+        l2.setAlpha(1);
         l1.animate().translationX(0).setDuration(0);
         l2.animate().translationX(-8000).setDuration(0);
 
