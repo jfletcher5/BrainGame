@@ -124,21 +124,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 alertDialog.show();
-
-////
-////                Intent i = new Intent(getApplicationContext(), Pop.class);
-////                i.putExtra("key", "Value");
-////                i.putExtra("points", points);
-////                i.putExtra("total", problemTotal);
-//
-//
-//                startActivity(i);
-                resetL1Game();
                 b.setVisibility(View.VISIBLE);
-                //b2.setVisibility(View.VISIBLE);
 
                 resetLayouts();
-
             }
 
         };
@@ -185,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
         printDatabase();
     }
 
-
     public void setScore() {
 
         if (checkAnswer()) {
@@ -215,9 +202,21 @@ public class MainActivity extends AppCompatActivity {
         scoreTextView.setText(scoreText);
     }
 
+
+    public void resetLayouts(){
+
+        l1.setAlpha(1);
+        l2.setAlpha(1);
+        l1.animate().translationX(0).setDuration(0);
+        l2.animate().translationX(-8000).setDuration(0);
+        resetL2Game();
+        resetL1Game();
+    }
+
     //Level 1 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void waitForLevel2(){
+
         new CountDownTimer(3000, 3000){
             @Override
             public void onTick(long l) {
@@ -381,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Text", viewText);
 
         setScore();
+
         if (threeInARow == 3) {
             timer.cancel();
             threeInARow = 0;
@@ -389,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
             int newTime = Integer.parseInt(separated[1]);
             Log.i("new time", Integer.toString(newTime));
             runTimer(newTime + 3, timerTextView);
+
 
             //add plus 3 animation
             TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
@@ -422,60 +423,51 @@ public class MainActivity extends AppCompatActivity {
             Log.i("new time", Integer.toString(newTime));
 
             //wait for L2 translate before starting game
+            resetL2Blocks();
             waitForLevel2();
             Log.i("After wait code", "yes");
 
         } else {
 
             setProblem();
-
-            //if players gets 3 in a row, stop timer and start a new one with old time +3
-//            if (threeInARow == 3) {
-//                timer.cancel();
-//                threeInARow = 0;
-//                String timeString = timerTextView.getText().toString();
-//                String[] separated = timeString.split(":");
-//                int newTime = Integer.parseInt(separated[1]);
-//                Log.i("new time", Integer.toString(newTime));
-//                runTimer(newTime + 3, timerTextView);
-//
-//                //add plus 3 animation
-//                TextView p3 = (TextView) findViewById(R.id.plusThreeTime);
-//                p3.setAlpha(1);
-//                p3.animate().alpha(0.0f).setDuration(1000);
-//            }
         }
     }
 
     //Level 2 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public void resetL2Game (){
+        nb1.setAlpha(1);
+        nb2.setAlpha(1);
+        nb3.setAlpha(1);
+        nb4.setAlpha(1);
+        nb5.setAlpha(1);
+        nb6.setAlpha(1);
+        resetL2Blocks();
+    }
+
     public void resetL2Blocks (){
 
         //reset blocks to starting position
-        nb1.animate().translationY(0).setDuration(1000);
-        nb2.animate().translationY(0).setDuration(1000);
-        nb3.animate().translationY(0).setDuration(1000);
-        nb4.animate().translationY(0).setDuration(1000);
-        nb5.animate().translationY(0).setDuration(1000);
-        nb6.animate().translationY(0).setDuration(1000);
-
-        new CountDownTimer(1000, 100) {
-            @Override
-            public void onTick(long l) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                translateLevel2Blocks();
-            }
-        }.start();
+        nb1.animate().translationY(0).setDuration(500);
+        nb2.animate().translationY(0).setDuration(500);
+        nb3.animate().translationY(0).setDuration(500);
+        nb4.animate().translationY(0).setDuration(500);
+        nb5.animate().translationY(0).setDuration(500);
+        nb6.animate().translationY(0).setDuration(500);
 
     }
 
     public void translateLevel2Blocks(){
 
-        int tmin = 7000; int tmax = 8000;
+        int tmin = 5000; int tmax = 8000;
+
+        nb1.animate().cancel();
+        nb2.animate().cancel();
+        nb3.animate().cancel();
+        nb4.animate().cancel();
+        nb5.animate().cancel();
+        nb6.animate().cancel();
+
         nb1.animate().translationY(2000).setDuration(randGen(tmax, tmin));
         nb2.animate().translationY(2000).setDuration(randGen(tmax, tmin));
         nb3.animate().translationY(2000).setDuration(randGen(tmax, tmin));
@@ -491,6 +483,17 @@ public class MainActivity extends AppCompatActivity {
         int playerGuess = Integer.parseInt(cb1.getText().toString())+Integer.parseInt(cb2.getText().toString());
         if (lev2correctAnswer==playerGuess){
             resetL2Blocks();
+            new CountDownTimer(500, 100) {
+                @Override
+                public void onTick(long l) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    translateLevel2Blocks();
+                }
+            }.start();
             level2SetProblem();
             points++;
             problemTotal++;
@@ -558,7 +561,14 @@ public class MainActivity extends AppCompatActivity {
         String selectedButtonText = vb.getText().toString();
         int selectedNumber = Integer.parseInt(selectedButtonText);
 
+        //stop falling animation
         view.animate().cancel();
+
+        //fade button to make it harder to use
+        view.getAlpha();
+        String a = Float.toString(view.getAlpha());
+        Log.e("alpha button", a);
+        view.animate().alpha(view.getAlpha()*.3f).setDuration(500);
         Log.i("L2 Button Clicked", view.getTag().toString());
         float translation = view.getTranslationY();
         Log.i("Translation", Float.toString(translation));
@@ -581,33 +591,10 @@ public class MainActivity extends AppCompatActivity {
             p3.setAlpha(1);
             p3.animate().alpha(0.0f).setDuration(1000);
         }
-
-//        view.animate().translationY(0).setDuration(2000);
-//        level2Translate(view, 2000, randReset);
-
     }
 
-    public void resetl2game(){
-
-//        resetL2Blocks();
-
-    }
 
     //Level 3 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-    public void resetLayouts(){
-
-//        resetL1Game();
-//        resetl2game();
-        l1.setAlpha(1);
-        l2.setAlpha(1);
-        l1.animate().translationX(0).setDuration(0);
-        l2.animate().translationX(-8000).setDuration(0);
-
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
