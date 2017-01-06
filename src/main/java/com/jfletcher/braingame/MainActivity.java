@@ -127,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 b.setVisibility(View.VISIBLE);
 
                 resetLayouts();
+                resetL2Game();
+                resetL1Game();
             }
 
         };
@@ -209,8 +211,7 @@ public class MainActivity extends AppCompatActivity {
         l2.setAlpha(1);
         l1.animate().translationX(0).setDuration(0);
         l2.animate().translationX(-8000).setDuration(0);
-        resetL2Game();
-        resetL1Game();
+
     }
 
     //Level 1 Specific Methods/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
