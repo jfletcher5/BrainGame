@@ -540,21 +540,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void level2Translate(final View vReset, long l, final long r){
-
-        new CountDownTimer(l, 100){
-            @Override
-            public void onTick(long l) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                vReset.animate().translationY(2000).setDuration(r);
-            }
-        }.start();
-    }
-
     public void level2Click(View view){
 
         Button vb = (Button) findViewById(view.getId());
